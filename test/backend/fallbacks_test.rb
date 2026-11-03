@@ -83,6 +83,12 @@ class I18nBackendFallbacksTranslateTest < I18n::TestCase
     assert_equal "Default Bar", I18n.t(:missing_foo, :locale => :'de-DE', :default => [:missing_bar, Proc.new { "Default Bar" }, :baz])
   end
 
+  test "flattens nested Array defaults and leaves the given Array unchanged" do
+    defaults = [[:missing_bar, ["Default Bar"]], :baz]
+    assert_equal "Default Bar", I18n.t(:missing_foo, :locale => :'de-DE', :default => defaults)
+    assert_equal [[:missing_bar, ["Default Bar"]], :baz], defaults
+  end
+
   test "returns the default translation for a missing :'de-DE' and existing :de when default is a Hash" do
     assert_equal 'Default 6 Bars', I18n.t(:missing_foo, :locale => :'de-DE', :default => [:missing_bar, {:other => "Default %{count} Bars"}, "Default Bar"], :count => 6)
   end

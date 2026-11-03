@@ -95,7 +95,13 @@ module I18n
       end
 
       def extract_non_symbol_default!(options)
-        defaults = [options[:default]].flatten
+        default = options[:default]
+        unless default.is_a?(Array)
+          return if default.is_a?(Symbol)
+          options[:default] = []
+          return default
+        end
+        defaults = [default].flatten
         first_non_symbol_default = defaults.detect{|default| !default.is_a?(Symbol)}
         if first_non_symbol_default
           options[:default] = defaults[0, defaults.index(first_non_symbol_default)]
