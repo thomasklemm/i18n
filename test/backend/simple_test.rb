@@ -171,6 +171,16 @@ class I18nBackendSimpleTest < I18n::TestCase
     assert_equal 'foo', I18n.t(:'1')
   end
 
+  test "simple lookup: finds numeric and boolean keys stored as Symbols, and misses Symbol keys that are not stored" do
+    store_translations(:en, :numbers => { :"2" => 'two', :true => 'yes' }, :scope => { :present => 'here' })
+    assert_equal 'two', I18n.t(2, :scope => :numbers)
+    assert_equal 'two', I18n.t('numbers.2')
+    assert_equal 'yes', I18n.t('numbers.true')
+    assert_nil I18n.backend.send(:lookup, :en, :absent, :scope)
+    assert_nil I18n.backend.send(:lookup, :en, :'present.deeper', :scope)
+    assert_equal 'Translation missing: en.scope.absent', I18n.t(:absent, :scope => :scope)
+  end
+
   test "simple store_translations: store translations doesn't deep symbolize keys if skip_symbolize_keys is true" do
     data = { :foo => {'bar' => 'barfr', 'baz' => 'bazfr'} }
 

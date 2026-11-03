@@ -97,6 +97,8 @@ module I18n
           keys.inject(translations) do |result, _key|
             return nil unless result.is_a?(Hash)
             unless result.has_key?(_key)
+              # Only keys that are not Symbols (Integers, true, false) can be stored as Symbols instead.
+              return nil if _key.is_a?(Symbol)
               _key = _key.to_s.to_sym
               return nil unless result.has_key?(_key)
             end
