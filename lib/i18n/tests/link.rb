@@ -35,6 +35,16 @@ module I18n
         assert_equal('linked', I18n.backend.translate('en', :'foo.link'))
       end
 
+      test "linked lookup: a link drops the count and scope options and keeps the others" do
+        I18n.backend.store_translations 'en', {
+          :foo => { :link => :"bar.apples" },
+          :bar => { :apples => { :one => '%{count} apple for %{name}', :other => '%{count} apples for %{name}' } }
+        }
+        assert_equal '2 apples for Ann', I18n.backend.translate('en', :link, :scope => :foo, :count => 2, :name => 'Ann')
+        options = { :scope => :foo, :count => 1, :name => 'Ann' }.freeze
+        assert_equal '1 apple for Ann', I18n.backend.translate('en', :link, options)
+      end
+
       test "linked lookup: links always refer to the absolute key" do
         I18n.backend.store_translations 'en', {
           :foo => { :link => :linked, :linked => 'linked in foo' },

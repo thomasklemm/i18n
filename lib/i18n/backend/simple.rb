@@ -101,7 +101,11 @@ module I18n
               return nil unless result.has_key?(_key)
             end
             result = result[_key]
-            result = resolve_entry(locale, _key, result, Utils.except(options.merge(:scope => nil), :count)) if result.is_a?(Symbol)
+            if result.is_a?(Symbol)
+              link_options = options.except(:count)
+              link_options[:scope] = nil
+              result = resolve_entry(locale, _key, result, link_options)
+            end
             result
           end
         end
