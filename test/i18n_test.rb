@@ -600,6 +600,18 @@ class I18nTest < I18n::TestCase
     assert_equal :en, fiber_locale
   end
 
+  test "uses Fiber storage that becomes available after i18n is loaded" do
+    skip "Fiber storage requires Ruby 3.2+" unless Fiber.respond_to?(:[])
+    stub_const(I18n, :FIBER_STORAGE, false) do
+      I18n.locale = :de
+      assert_equal :de, Fiber[:i18n_config].locale
+      assert_equal :de, I18n.locale
+    end
+  ensure
+    I18n.send(:private_constant, :FIBER_STORAGE)
+    I18n.locale = :en
+  end
+
   test "I18n.locale is isolated between concurrent Fibers" do
     skip "Fiber storage requires Ruby 3.2+" unless Fiber.respond_to?(:[])
     I18n.available_locales = [:en, :ja]
